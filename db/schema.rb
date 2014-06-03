@@ -10,15 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2) do
+ActiveRecord::Schema.define(version: 3) do
 
   create_table "mails", force: true do |t|
+    t.string  "name"
+    t.integer "user_id"
+  end
+
+  add_index "mails", ["name"], name: "index_mails_on_name", unique: true
+
+  create_table "phones", force: true do |t|
+    t.string  "name"
+    t.integer "user_id"
+  end
+
+  add_index "phones", ["name"], name: "index_phones_on_name", unique: true
+
+  create_table "users", force: true do |t|
     t.string "name"
   end
 
-  create_table "people", force: true do |t|
-    t.string  "name"
-    t.integer "mail_id"
-  end
+  add_index "users", ["name"], name: "index_users_on_name", unique: true
 
 end

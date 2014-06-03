@@ -1,4 +1,5 @@
 require 'active_record'
+require 'acts_as_array'
 
 # create_table :users do |t|
 #   t.string :name
@@ -12,16 +13,18 @@ require 'active_record'
 #   t.references :user
 # end
 
-class User < ActiveRecord::Base
-  include ActsAsArray
-  has_many :mails
-  has_many :phones
-end
-
 class Mail < ActiveRecord::Base
   belongs_to :user
 end
 
 class Phone < ActiveRecord::Base
   belongs_to :user
+end
+
+class User < ActiveRecord::Base
+  include ActsAsArray
+  has_many :mails
+  has_many :phones
+  acts_as_array :mails => {:class => Mail, :field => :name},
+    :phones => {:class => Phone, :field => :name}
 end

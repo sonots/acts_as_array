@@ -4,6 +4,7 @@ class CreatePhones < ActiveRecord::Migration
       t.string :name
       t.references :user
     end
+    add_index :phones, :name, :unique => true
   end
  
   def self.down

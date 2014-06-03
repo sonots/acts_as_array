@@ -1,18 +1,16 @@
-# Acts as file
+# Acts as array
 
-`acts_as_file` makes your field act as a file.
-The content of the field is stored into a file on calling `#save` method, 
-and is loaded from the file on calling its accessor method. 
+`acts_as_array` makes possible to treat your array fields simply.
 
-[![Build Status](https://travis-ci.org/sonots/acts_as_file.svg)](https://travis-ci.org/sonots/acts_as_file)
-[![Coverage Status](https://coveralls.io/repos/sonots/acts_as_file/badge.png)](https://coveralls.io/r/sonots/acts_as_file)
+[![Build Status](https://travis-ci.org/sonots/acts_as_array.svg)](https://travis-ci.org/sonots/acts_as_array)
+[![Coverage Status](https://coveralls.io/repos/sonots/acts_as_array/badge.png)](https://coveralls.io/r/sonots/acts_as_array)
 
 ## Installation
 
 Add the following to your `Gemfile`:
 
 ```ruby
-gem 'acts_as_file'
+gem 'acts_as_array'
 ```
 
 And then execute:
@@ -21,29 +19,113 @@ And then execute:
 $ bundle
 ```
 
-## Examples
+## What is this for?
 
-ActiveRecord is not required, but let me write an example for it.
+Say an user has multiple mail addresses. Typically you will define table schema as:
 
 ```ruby
-class Post < ActiveRecord::Base
-  include ActsAsFile
-  def filename
-    "posts/#{self.id}_body.txt"
-  end
-  acts_as_file :body => self.instance_method(:filename)
+create_table :users do |t|
+  t.string :name
 end
 
-# store
-post = Post.new
-post.body = 'content'
-post.save # save the content into the file of `#filename`
-          # create the directory if not exist
-# load
-post = Post.first
-puts post.body # load the content from the file of `#filename`
-post.destroy   # remove the file
+create_table :mails do |t|
+  t.string :address
+  t.references :user
+end
 ```
+
+And, define ActiveRecord models as:
+
+```ruby
+class Mail < ActiveRecord::Base
+  belongs_to :user
+end
+
+class User < ActiveRecord::Base
+  has_many :mails
+end
+```
+
+In this case, you will store multiple mail addresses to an users like:
+
+```ruby
+ichiro = User.new(name: 'Ichiro')
+ichiro.mails = [Mail.new(address: 'ichiro@example.com'), Mail.new(address: 'ichiro2@example.com')]
+ichiro.save
+```
+
+But, you want to set multiple mail addresses simply like followings?:
+
+```ruby
+ichiro = User.new(name: 'Ichiro')
+ichiro.mails = ['ichiro@example.com', 'ichiro2@example.com']
+ichiro.save
+```
+
+Then, `acts_as_array` is available for you. 
+
+
+### With acts_as_array
+
+Use `acts_as_array` as:
+
+```ruby
+class Mail < ActiveRecord::Base
+  belongs_to :user
+end
+
+require 'acts_as_array'
+class User < ActiveRecord::Base
+  has_many :mails
+  include ActsAsArray
+  acts_as_array :mails => {:class => Mail, :field => :address} 
+end
+```
+
+Then, it makes possible to set and get non-object array values like:
+
+```ruby
+ichiro = User.new(name: 'Ichiro')
+ichiro.mails = ['ichiro@example.com', 'ichiro2@example.com']
+ichiro.save
+User.first.mails #=> ['ichiro@example.com', 'ichiro2@example.com']
+```
+
+You can also get the original object array values with:
+
+```ruby
+ichiro.obj_mails #=> [Mail.new(address: 'ichiro@example.com'), Mail.new(address: 'ichiro2@example.com')]
+```
+
+## Supported methods
+
+Following ActiveRecord methods are supported to specify non-object array values:
+
+* create
+
+  `create(field: non_object_array)`
+
+* update_attributes
+
+   `update_attributes(field: non_object_array)`
+
+* update
+
+   `update(field: non_object_array)`
+
+* {field}=
+
+   `{field} = non_object_array`
+
+Also, following getter methods are available:
+
+* {field}
+
+  Return non-object array values
+
+* obj_{field}
+
+  Return object array values
 
 ## Contributing
 

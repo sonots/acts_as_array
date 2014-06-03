@@ -2,12 +2,12 @@
 # encoding: utf-8
 
 Gem::Specification.new do |s|
-  s.name          = "acts_as_file"
+  s.name          = "acts_as_array"
   s.authors       = ["Naotoshi Seo"]
   s.email         = ["sonots@gmail.com"]
-  s.homepage      = "https://github.com/sonots/acts_as_file"
-  s.summary       = "Make your field act as an array"
-  s.description   = "Make your field act as an array."
+  s.homepage      = "https://github.com/sonots/acts_as_array"
+  s.summary       = "Treat array fields simply"
+  s.description   = "Treat array fields simply."
   s.version       = '0.0.1'
   s.date          = Time.now.strftime("%Y-%m-%d")
 

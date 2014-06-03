@@ -4,6 +4,7 @@ class CreateMails < ActiveRecord::Migration
       t.string :name
       t.references :user
     end
+    add_index :mails, :name, :unique => true
   end
  
   def self.down
