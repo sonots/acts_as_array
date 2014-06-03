@@ -9,9 +9,9 @@ ActiveRecord::Base.establish_connection(
   :database => 'db/sqlite.db'
 )
 
-#require 'rake'
-#require_relative 'migrate_tasks'
-#Rake::Task['db:schema:load'].invoke
+require 'rake'
+require_relative 'migrate_tasks'
+Rake::Task['db:schema:load'].invoke
 
 if ENV['TRAVIS']
   require 'coveralls'
