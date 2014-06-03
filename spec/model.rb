@@ -25,6 +25,5 @@ class User < ActiveRecord::Base
   include ActsAsArray
   has_many :mails
   has_many :phones
-  acts_as_array :mails => {:class => Mail, :field => :name},
-    :phones => {:class => Phone, :field => :name}
+  acts_as_array :mails => {:field => :name}, :phones => {:field => :name}
 end

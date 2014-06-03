@@ -78,7 +78,7 @@ require 'acts_as_array'
 class User < ActiveRecord::Base
   has_many :mails
   include ActsAsArray
-  acts_as_array :mails => {:class => Mail, :field => :address} 
+  acts_as_array :mails => {:field => :address}
 end
 ```
 

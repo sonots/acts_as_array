@@ -1,3 +1,5 @@
+require 'active_support/core_ext'
+
 module ActsAsArray
   def self.included(klass)
     klass.extend(ClassMethods)
@@ -6,6 +8,9 @@ module ActsAsArray
   module ClassMethods
     # acts_as_array :has_many_field => {:class => Class, :field => :name}
     def acts_as_array(params = {})
+      params.each do |field, opts|
+        opts[:class] ||= field.to_s.singularize.capitalize.constantize
+      end
       self.class_eval do
         params.each do |field, opts|
           # xxxx = raw_array #=> obj_array
