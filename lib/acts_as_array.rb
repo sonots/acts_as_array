@@ -13,12 +13,15 @@ module ActsAsArray
       end
       self.class_eval do
         params.each do |field, opts|
-          # xxxx = raw_array #=> obj_array
+          # Setter with an array mapper
           #
           # Example:
           #
           # mails = ['a@a.com', 'b@b.com']
-          #   #=> [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
+          #
+          # instead of
+          # 
+          # mails = [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
           unless method_defined?("#{field}_with_arraymap=")
             define_method("#{field}_with_arraymap=") do |raw_array|
               obj_array = __send__("make_#{field}", raw_array)
@@ -29,10 +32,15 @@ module ActsAsArray
             alias_method("#{field}=", "#{field}_with_arraymap=")
           end
 
+          # Getter with an array mapper
+          #
           # Example:
           #
-          # mails_without_arraymap #=> [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
-          # mails | mails_with_arraymap #=> ['a@a.com', 'b@b.com']
+          # mails #=> ['a@a.com', 'b@b.com']
+          #
+          # instead of
+          #
+          # mails #=> [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
           unless method_defined?("#{field}_with_arraymap")
             define_method("#{field}_with_arraymap") do
               obj_array = __send__("#{field}_without_arraymap")
@@ -43,17 +51,25 @@ module ActsAsArray
             alias_method("#{field}", "#{field}_with_arraymap")
           end
 
+          # Get the original object array
+          #
+          # Example:
+          #
           # obj_mails #=> [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
           define_method("obj_#{field}") do
             __send__("#{field}_without_arraymap")
           end
 
-          # make_xxxx(raw_array) #=> obj_array
+          # Convert the single value array to object array
           #
           # Example:
           #
           # make_mails(['a@a.com', 'b@b.com'])
-          #   #=> [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
+          # #=> [Mail.new(name: 'a@a.com'), Mail.new(name: 'b@b.com')]
+          #
+          # Note:
+          #
+          # This method uses the `#find_or_initialize_by` method internally
           define_method("make_#{field}") do |raw_array|
             return nil unless raw_array
             raw_array.map {|val| opts[:class].find_or_initialize_by(opts[:field] => val) }
